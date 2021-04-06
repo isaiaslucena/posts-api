@@ -53,3 +53,19 @@ export const updatePost: RequestHandler = (req, res, next) => {
 
   res.json({ message: "Post updated!", post: jsonData[findPostIndex] });
 };
+
+export const deletePost: RequestHandler = (req, res, next) => {
+  const idParam = +req.params.id;
+
+  const jsonData: [] = JSON.parse(fs.readFileSync(jsonDataFile, 'utf8'));
+
+  const findPostIndex = jsonData.findIndex((post: { id: number }) => post.id === idParam);
+  if (findPostIndex < 0) throw new Error(`Post ID ${idParam} not found!`);
+
+  const deletedPost = jsonData[findPostIndex];
+  jsonData.splice(findPostIndex, 1);
+
+  fs.writeFileSync(jsonDataFile, JSON.stringify(jsonData), 'utf8');
+
+  res.json({ message: "Post deleted!", post: deletedPost });
+};
